@@ -3,7 +3,7 @@ import { List, Image, Button } from 'semantic-ui-react';
 
 const recipe = props => {
   return (
-    <List.Item>
+    <List.Item onClick={props.onClickViewRecipe}>
       <Image
         size="mini"
         src="https://www.theideaskitchen.co.uk/wp-content/uploads/2018/09/icon-vegetarian.png"

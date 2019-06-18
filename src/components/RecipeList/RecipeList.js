@@ -12,11 +12,14 @@ const recipeList = props => {
           key={recipe._id}
           name={recipe.name}
           description={recipe.description}
-          onClickEditRecipe={recipeId => {
-            props.onClickEditRecipe(recipeId);
+          onClickEditRecipe={(e) => {
+            props.onClickEditRecipe(e, recipe._id);
           }}
-          onClickDeleteRecipe={(e, data) =>
-            props.onClickDeleteRecipe(e, data, recipe._id)
+          onClickViewRecipe={(e) => {
+            props.onClickViewRecipe(e, recipe._id);
+          }}
+          onClickDeleteRecipe={(e) =>
+            props.onClickDeleteRecipe(e, recipe._id)
           }
         />
       ))}
