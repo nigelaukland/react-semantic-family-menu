@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Input, Button } from 'semantic-ui-react';
+import { Menu, Button, Icon } from 'semantic-ui-react';
 
 const menuBar = props => {
   return (
@@ -23,21 +23,19 @@ const menuBar = props => {
         name="Shopping List"
         active={props.menuActiveItem === 'Shopping List'}
         onClick={props.menuItemClicked}
-        />
-      <Menu.Item>
-        <Button 
-          basic 
-          color='red' 
-          onClick={props.menuItemClicked}
-          name="Add Recipe"
-          active={props.menuActiveItem === 'Add Recipe'}
-          >Add Recipe
-          </Button>
-        
-        </Menu.Item>
+      />
       <Menu.Menu position="right">
         <Menu.Item>
-          <Input icon="search" placeholder="Search..." />
+          <Button
+            icon
+            labelPosition="left"
+            color="red"
+            name="Login"
+            active={props.menuActiveItem === 'Login'}
+          >
+            <Icon name="user" />
+            Login
+          </Button>
         </Menu.Item>
       </Menu.Menu>
     </Menu>

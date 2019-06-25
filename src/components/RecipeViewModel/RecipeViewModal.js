@@ -3,7 +3,7 @@ import { Header, Image, Modal } from 'semantic-ui-react';
 
 const recipeViewModal = props => {
   return (
-    <Modal open onClose={props.toggleRecipeViewModal}>
+    <Modal open onClose={props.closeRecipeViewModal}>
       <Modal.Header>{props.recipe.name}</Modal.Header>
       <Modal.Content image>
         <Image

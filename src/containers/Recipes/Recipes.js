@@ -1,13 +1,19 @@
 import React, { Component } from 'react';
 import RecipeList from './../../components/RecipeList/RecipeList';
 import RecipeViewModal from './../../components/RecipeViewModel/RecipeViewModal';
-import { Container, List } from 'semantic-ui-react';
+import RecipeAddModal from './../../components/RecipeAddModal/RecipeAddModal';
+import { Container, List, Menu, Button } from 'semantic-ui-react';
 
 class Recipes extends Component {
   state = {
     recipes: [],
     recipeTarget: null,
-    recipeViewModalIsVisible: false
+    recipeViewModalIsVisible: false,
+    recipeAddModalIsVisible: false,
+    recipeFormName: '',
+    recipeFormDescription: '',
+    recipeFormIngredients: '',
+    recipeFormImage: null
   };
 
   componentDidMount() {
@@ -56,15 +62,75 @@ class Recipes extends Component {
       });
   };
 
-  toggleRecipeViewModal = () => {
+  handleAddRecipeClick = (e, { name }) =>
+    this.setState({ recipeAddModalIsVisible: true });
+
+  closeRecipeViewModal = () => {
     this.setState({
-      recipeViewModalIsVisible: !this.state.recipeViewModalIsVisible
+      recipeViewModalIsVisible: false
     });
+  };
+
+  closeRecipeAddModal = () => {
+    this.setState({
+      recipeAddModalIsVisible: false
+    });
+  };
+
+  handleAddRecipeModalSubmit = (e, data) => {
+    // deconstruct the state properties related to the form
+    const {
+      recipeFormName,
+      recipeFormDescription,
+      recipeFormIngredients,
+      recipeFormImage
+    } = this.state;
+    // build a FormData object for POSTing
+    const recipeData = new FormData();
+    recipeData.append('name', recipeFormName);
+    recipeData.append('description', recipeFormDescription);
+    recipeData.append('ingredients', recipeFormIngredients);
+    recipeData.append('imagePath', recipeFormImage);
+    // POST
+    fetch('http://localhost:50001/recipe', {
+      method: 'POST',
+      body: recipeData,
+      // headers: { 'Content-Type': 'multipart/form-data' }
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        console.log(data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  recipeFormImageChange = (e, data) => {
+    this.setState({ recipeFormImage: e.target.files[0] });
+  };
+
+  recipeFormDataChange = (e, { name, value }) => {
+    this.setState({ [name]: value });
   };
 
   render() {
     return (
       <Container>
+        <Menu secondary>
+          <Menu.Item>
+            <Button
+              basic
+              color="red"
+              name="Add Recipe"
+              onClick={this.handleAddRecipeClick}
+            >
+              Add Recipe
+            </Button>
+          </Menu.Item>
+        </Menu>
         <List selection animated relaxed celled>
           <RecipeList
             recipes={this.state.recipes}
@@ -76,7 +142,18 @@ class Recipes extends Component {
         {this.state.recipeViewModalIsVisible ? (
           <RecipeViewModal
             recipe={this.state.recipeTarget}
-            toggleRecipeViewModal={this.toggleRecipeViewModal}
+            closeRecipeViewModal={this.closeRecipeViewModal}
+          />
+        ) : null}
+        {this.state.recipeAddModalIsVisible ? (
+          <RecipeAddModal
+            recipe={this.state.recipeTarget}
+            closeRecipeAddModal={this.closeRecipeAddModal}
+            onClickUploadImage={this.handleUploadImage}
+            recipeFormDataChange={this.recipeFormDataChange}
+            recipeFormImageChange={this.recipeFormImageChange}
+            recipeFormImage={this.state.recipeFormImage}
+            onRecipeAddModalSubmit={this.handleAddRecipeModalSubmit}
           />
         ) : null}
       </Container>

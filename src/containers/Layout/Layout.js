@@ -6,7 +6,7 @@ import { Container } from 'semantic-ui-react';
 
 class Layout extends Component {
   state = {
-    menuActiveItem: 'Recipes'
+    menuActiveItem: 'Home'
   };
 
   handleMenuItemClick = (e, { name }) =>
@@ -18,6 +18,7 @@ class Layout extends Component {
         <MenuBar
           menuActiveItem={this.state.menuActiveItem}
           menuItemClicked={this.handleMenuItemClick}
+          addRecipeClicked={this.handleAddRecipeClick}
         />
         {this.state.menuActiveItem === 'Home' ? (
           <Container>This is the home menu page</Container>
