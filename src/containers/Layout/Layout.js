@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Aux from '../../hoc/Auxilliary';
 import MenuBar from '../../components/MenuBar/MenuBar';
 import Recipes from './../Recipes/Recipes';
+import MenuHome from './../MenuHome/MenuHome';
 import { Container } from 'semantic-ui-react';
 
 class Layout extends Component {
@@ -21,7 +22,7 @@ class Layout extends Component {
           addRecipeClicked={this.handleAddRecipeClick}
         />
         {this.state.menuActiveItem === 'Home' ? (
-          <Container>This is the home menu page</Container>
+          <MenuHome />
         ) : null}
         {this.state.menuActiveItem === 'Menus' ? (
           <Container>This is the planner and list of available menus</Container>

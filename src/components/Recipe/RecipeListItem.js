@@ -1,12 +1,14 @@
 import React from 'react';
 import { List, Image, Button } from 'semantic-ui-react';
 
-const recipe = props => {
+const API_URL = 'http://localhost:50001';
+
+const recipeListItem = props => {
   return (
     <List.Item onClick={props.onClickViewRecipe}>
       <Image
         size="mini"
-        src="https://www.theideaskitchen.co.uk/wp-content/uploads/2018/09/icon-vegetarian.png"
+        src={`${API_URL}${props.tinyImagePath}`}
       />
       <List.Content>
         <List.Header>{props.name}</List.Header>
@@ -20,4 +22,4 @@ const recipe = props => {
   );
 };
 
-export default recipe;
+export default recipeListItem;

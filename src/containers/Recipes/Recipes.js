@@ -4,27 +4,35 @@ import RecipeViewModal from './../../components/RecipeViewModel/RecipeViewModal'
 import RecipeAddModal from './../../components/RecipeAddModal/RecipeAddModal';
 import { Container, List, Menu, Button } from 'semantic-ui-react';
 
+const API_URL = 'http://localhost:50001';
+
 class Recipes extends Component {
   state = {
     recipes: [],
     recipeTarget: null,
     recipeViewModalIsVisible: false,
     recipeAddModalIsVisible: false,
+    recipeAddModalLoading: false,
     recipeFormName: '',
     recipeFormDescription: '',
     recipeFormIngredients: '',
-    recipeFormImage: null
+    recipeFormImage: null,
+    recipeFormImagePreview: null
   };
 
   componentDidMount() {
-    fetch('http://localhost:50001/recipes')
-      .then(response => {
-        return response.json();
-      })
-      .then(data => {
-        this.setState({ recipes: data });
-      });
+    this.getRecipes();
   }
+
+  getRecipes = () => {
+    fetch(`${API_URL}/recipes`)
+    .then(response => {
+      return response.json();
+    })
+    .then(data => {
+      this.setState({ recipes: data });
+    });
+  };
 
   handleEditRecipe = (e, _id) => {
     // stop the click event from also triggering the click event listener on the parent div
@@ -48,7 +56,7 @@ class Recipes extends Component {
     // stop the click event from also triggering the click event listener on the parent div
     e.stopPropagation();
     console.log(`Deleting recipe ${_id}`);
-    fetch(`http://localhost:50001/recipe/${_id}`, { method: 'DELETE' })
+    fetch(`${API_URL}/recipe/${_id}`, { method: 'DELETE' })
       .then(response => {
         return response.json();
       })
@@ -79,6 +87,7 @@ class Recipes extends Component {
 
   handleAddRecipeModalSubmit = (e, data) => {
     // deconstruct the state properties related to the form
+    this.setState({ recipeAddModalLoading: true });
     const {
       recipeFormName,
       recipeFormDescription,
@@ -92,7 +101,7 @@ class Recipes extends Component {
     recipeData.append('ingredients', recipeFormIngredients);
     recipeData.append('imagePath', recipeFormImage);
     // POST
-    fetch('http://localhost:50001/recipe', {
+    fetch(`${API_URL}/recipe`, {
       method: 'POST',
       body: recipeData,
       // headers: { 'Content-Type': 'multipart/form-data' }
@@ -102,6 +111,11 @@ class Recipes extends Component {
       })
       .then(data => {
         console.log(data);
+        this.setState({ 
+          recipeAddModalLoading: false, 
+          recipeAddModalIsVisible: false,
+          recipeFormImagePreview: null });
+        this.getRecipes();
       })
       .catch(err => {
         console.log(err);
@@ -109,7 +123,10 @@ class Recipes extends Component {
   };
 
   recipeFormImageChange = (e, data) => {
-    this.setState({ recipeFormImage: e.target.files[0] });
+    this.setState({ 
+      recipeFormImagePreview: URL.createObjectURL(e.target.files[0]), 
+      recipeFormImage: e.target.files[0] 
+    });
   };
 
   recipeFormDataChange = (e, { name, value }) => {
@@ -152,8 +169,9 @@ class Recipes extends Component {
             onClickUploadImage={this.handleUploadImage}
             recipeFormDataChange={this.recipeFormDataChange}
             recipeFormImageChange={this.recipeFormImageChange}
-            recipeFormImage={this.state.recipeFormImage}
+            recipeFormImagePreview={this.state.recipeFormImagePreview}
             onRecipeAddModalSubmit={this.handleAddRecipeModalSubmit}
+            recipeAddModalLoading={this.state.recipeAddModalLoading}
           />
         ) : null}
       </Container>
