@@ -101,6 +101,7 @@ class Recipes extends Component {
     recipeData.append('ingredients', recipeFormIngredients);
     recipeData.append('imagePath', recipeFormImage);
     // POST
+    console.log(recipeData)
     fetch(`${API_URL}/recipe`, {
       method: 'POST',
       body: recipeData,

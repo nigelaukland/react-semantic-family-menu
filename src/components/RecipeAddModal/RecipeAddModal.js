@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Button,
+  //Button,
   Modal,
   Form,
   Image,
@@ -47,15 +47,15 @@ const recipeAddModal = props => {
             placeholder="Select image..."
             onChange={props.recipeFormImageChange}
           />
-          <Button
+          <Form.Button
             loading={props.recipeAddModalLoading}
             floated="right"
             color="red"
             type="submit"
           >
-            Submit
-          </Button>
-          <Button
+            Add Recipe
+          </Form.Button>
+          <Form.Button
             onClick={props.closeRecipeAddModal}
             floated="right"
             basic
@@ -63,7 +63,7 @@ const recipeAddModal = props => {
             type="button"
           >
             Cancel
-          </Button>
+          </Form.Button>
         </Form>
       </ModalContent>
       <ModalContent image>

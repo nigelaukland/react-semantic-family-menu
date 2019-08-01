@@ -3,15 +3,150 @@ import Aux from '../../hoc/Auxilliary';
 import MenuBar from '../../components/MenuBar/MenuBar';
 import Recipes from './../Recipes/Recipes';
 import MenuHome from './../MenuHome/MenuHome';
+import Menus from './../Menus/Menus';
+import LoginModal from './../../components/Auth/LoginModal';
+import SignupModal from './../../components/Auth/SignupModal';
+
 import { Container } from 'semantic-ui-react';
+
+const API_URL = 'http://localhost:50001';
 
 class Layout extends Component {
   state = {
-    menuActiveItem: 'Home'
+    userEmail: '',
+    userId: '',
+    userToken: '',
+    isAuthenticated: false,
+    menuActiveItem: 'Home',
+    loginModalIsVisible: false,
+    loginModalLoading: false,
+    loginFormEmail: '',
+    loginFormPassword: '',
+    signupModalIsVisible: false,
+    signupModalLoading: false,
+    signupFormEmail: '',
+    signupFormPassword: ''
+  };
+  
+  handleMenuItemClick = (e, { name }) =>
+  this.setState({ menuActiveItem: name });
+  
+  handleLoginModalSubmit = (e, data) => {
+    console.log(data);
+    this.setState({ loginModalLoading: true });
+    e.preventDefault();
+    // deconstruct the state properties related to the form
+    const {
+      loginFormEmail,
+      loginFormPassword
+    } = this.state;
+
+    // build the request body
+    let loginData = {};
+    loginData.email = loginFormEmail;
+    loginData.password = loginFormPassword;
+    // POST
+    fetch(`${API_URL}/login`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(loginData),
+        })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        console.log(data);
+        this.setState({
+          userEmail: loginData.email,
+          userId: data.userId,
+          userToken: data.token,
+          loginModalLoading: false,
+          loginModalIsVisible: false,
+          isAuthenticated: true
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
-  handleMenuItemClick = (e, { name }) =>
-    this.setState({ menuActiveItem: name });
+  loginFormDataChange = (e, { name, value }) => {
+    this.setState({ [name]: value });
+  };
+
+  handleLoginClick = (e, { name }) =>
+    this.setState({ loginModalIsVisible: true });
+
+  handleLogoutClick = (e, { name }) =>
+    // Need to show some confirmation popup here...
+    this.setState({ 
+      isAuthenticated: false,
+      userEmail: '',
+      userId: '',
+      userToken: ''
+     });
+
+  handleLoginModalSignup = () => {
+    this.setState({ loginModalIsVisible: false, signupModalIsVisible: true });
+  };
+
+  closeLoginModal = () => {
+    this.setState({
+      loginModalIsVisible: false
+    });
+  };
+
+  handleSignupModalSubmit = (e, data) => {
+    this.setState({ signupModalLoading: true });
+    // deconstruct the state properties related to the form
+    const {
+      signupFormEmail,
+      signupFormPassword
+    } = this.state;
+
+    // build the request body
+    let userData = {};
+    userData.email = signupFormEmail;
+    userData.password = signupFormPassword;
+    // POST
+    fetch(`${API_URL}/signup`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(userData),
+        })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        this.setState({
+          userEmail: userData.email,
+          userId: data.userId,
+          userToken: data.token,
+          signupModalLoading: false,
+          signupModalIsVisible: false,
+          isAuthenticated: true
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  signupFormDataChange = (e, { name, value }) => {
+    this.setState({ [name]: value });
+  };
+
+  closeSignupModal = () => {
+    this.setState({
+      signupModalIsVisible: false
+    });
+  };
 
   render() {
     return (
@@ -19,19 +154,41 @@ class Layout extends Component {
         <MenuBar
           menuActiveItem={this.state.menuActiveItem}
           menuItemClicked={this.handleMenuItemClick}
-          addRecipeClicked={this.handleAddRecipeClick}
+          loginClicked={this.handleLoginClick}
+          logoutClicked={this.handleLogoutClick}
+          isAuthenticated={this.state.isAuthenticated}
+          userEmail={this.state.userEmail}
+          // addRecipeClicked={this.handleAddRecipeClick}
         />
-        {this.state.menuActiveItem === 'Home' ? (
-          <MenuHome />
-        ) : null}
+        {this.state.menuActiveItem === 'Home' ? <MenuHome /> : null}
         {this.state.menuActiveItem === 'Menus' ? (
-          <Container>This is the planner and list of available menus</Container>
-        ) : null}
+          <Menus isAuthenticated={this.state.isAuthenticated} />
+        ) : // <Container>This is the planner and list of available menus</Container>
+        null}
         {this.state.menuActiveItem === 'Recipes' ? (
-            <Recipes />
+          <Recipes isAuthenticated={this.state.isAuthenticated} />
         ) : null}
         {this.state.menuActiveItem === 'Shopping List' ? (
           <Container>This is the shopping list</Container>
+        ) : null}
+        {this.state.loginModalIsVisible ? (
+          <LoginModal
+            user={this.state.user}
+            closeLoginModal={this.closeLoginModal}
+            loginFormDataChange={this.loginFormDataChange}
+            onLoginModalSubmit={this.handleLoginModalSubmit}
+            loginModalLoading={this.state.loginModalLoading}
+            onLoginModalSignup={this.handleLoginModalSignup}
+          />
+        ) : null}
+        {this.state.signupModalIsVisible ? (
+          <SignupModal
+            newUser={this.state.newUser}
+            closeSignupModal={this.closeSignupModal}
+            signupFormDataChange={this.signupFormDataChange}
+            onSignupModalSubmit={this.handleSignupModalSubmit}
+            signupModalLoading={this.state.signupModalLoading}
+          />
         ) : null}
       </Aux>
     );

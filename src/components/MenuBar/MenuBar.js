@@ -25,18 +25,33 @@ const menuBar = props => {
         onClick={props.menuItemClicked}
       />
       <Menu.Menu position="right">
-        <Menu.Item>
-          <Button
-            icon
-            labelPosition="left"
-            color="red"
-            name="Login"
-            active={props.menuActiveItem === 'Login'}
-          >
-            <Icon name="user" />
-            Login
-          </Button>
-        </Menu.Item>
+        {!props.isAuthenticated ? (
+          <Menu.Item>
+            <Button
+              icon
+              labelPosition="left"
+              color="red"
+              name="Login"
+              onClick={props.loginClicked}
+            >
+              <Icon name="user" />
+              Login / Signup
+            </Button>
+          </Menu.Item>
+        ) : (
+          <Menu.Item>
+            <Button
+              icon
+              labelPosition="left"
+              color="red"
+              name="Logout"
+              onClick={props.logoutClicked}
+            >
+              <Icon name="user" />
+              Logout {props.userEmail}
+            </Button>
+          </Menu.Item>
+        )}
       </Menu.Menu>
     </Menu>
   );
