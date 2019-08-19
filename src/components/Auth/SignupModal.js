@@ -21,7 +21,10 @@ const signupModal = props => {
             iconPosition="left"
             placeholder="E-mail address"
             onChange={props.signupFormDataChange}
+            value={props.newUser}
+            autoFocus
           />
+
           <Form.Input
             name="signupFormPassword"
             fluid
@@ -31,12 +34,7 @@ const signupModal = props => {
             type="password"
             onChange={props.signupFormDataChange}
           />
-          <Form.Button 
-            fluid 
-            color="red" 
-            size="large" 
-            type="submit"
-          >
+          <Form.Button fluid color="red" size="large" type="submit">
             Signup
           </Form.Button>
         </Form>

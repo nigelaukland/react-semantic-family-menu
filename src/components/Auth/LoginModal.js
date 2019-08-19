@@ -16,6 +16,7 @@ const loginModal = props => {
             iconPosition="left"
             placeholder="E-mail address"
             onChange={props.loginFormDataChange}
+            autoFocus
           />
           <Form.Input
             name="loginFormPassword"

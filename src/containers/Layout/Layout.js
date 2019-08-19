@@ -15,7 +15,7 @@ class Layout extends Component {
   state = {
     userEmail: '',
     userId: '',
-    userToken: '',
+    userToken: null,
     isAuthenticated: false,
     menuActiveItem: 'Home',
     loginModalIsVisible: false,
@@ -62,10 +62,10 @@ class Layout extends Component {
         this.setState({
           userEmail: loginData.email,
           userId: data.userId,
-          userToken: data.token,
+          userToken: data.token ? data.token : null,
           loginModalLoading: false,
           loginModalIsVisible: false,
-          isAuthenticated: true
+          isAuthenticated: data.token !== null
         });
       })
       .catch(err => {
@@ -86,7 +86,7 @@ class Layout extends Component {
       isAuthenticated: false,
       userEmail: '',
       userId: '',
-      userToken: ''
+      userToken: null
      });
 
   handleLoginModalSignup = () => {
@@ -127,7 +127,7 @@ class Layout extends Component {
         this.setState({
           userEmail: userData.email,
           userId: data.userId,
-          userToken: data.token,
+          userToken: data.token ? data.token : null,
           signupModalLoading: false,
           signupModalIsVisible: false,
           isAuthenticated: true
@@ -156,7 +156,8 @@ class Layout extends Component {
           menuItemClicked={this.handleMenuItemClick}
           loginClicked={this.handleLoginClick}
           logoutClicked={this.handleLogoutClick}
-          isAuthenticated={this.state.isAuthenticated}
+          isAuthenticated={this.state.userToken !== null} 
+          // isAuthenticated={this.state.userToken !== ''}
           userEmail={this.state.userEmail}
           // addRecipeClicked={this.handleAddRecipeClick}
         />
@@ -173,7 +174,6 @@ class Layout extends Component {
         ) : null}
         {this.state.loginModalIsVisible ? (
           <LoginModal
-            user={this.state.user}
             closeLoginModal={this.closeLoginModal}
             loginFormDataChange={this.loginFormDataChange}
             onLoginModalSubmit={this.handleLoginModalSubmit}
@@ -183,7 +183,7 @@ class Layout extends Component {
         ) : null}
         {this.state.signupModalIsVisible ? (
           <SignupModal
-            newUser={this.state.newUser}
+            newUser={this.state.loginFormEmail}
             closeSignupModal={this.closeSignupModal}
             signupFormDataChange={this.signupFormDataChange}
             onSignupModalSubmit={this.handleSignupModalSubmit}
