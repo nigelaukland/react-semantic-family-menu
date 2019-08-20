@@ -6,7 +6,10 @@ const API_URL = 'http://localhost:50001';
 
 const recipeCard = (props) => {
   return (
-    <Card>
+    <Card 
+      link
+      // onClick={props.onClickRecipeCard}
+      >
     <Card.Content>
       <Image
         floated='left'

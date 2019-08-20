@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import RecipeList from './../../components/RecipeList/RecipeList';
-import RecipeViewModal from './../../components/RecipeViewModel/RecipeViewModal';
+import RecipeViewModal from '../../components/RecipeViewModal/RecipeViewModal';
 import RecipeAddModal from './../../components/RecipeAddModal/RecipeAddModal';
 import { Container, List, Menu, Button } from 'semantic-ui-react';
 
@@ -26,12 +26,12 @@ class Recipes extends Component {
 
   getRecipes = () => {
     fetch(`${API_URL}/recipes`)
-    .then(response => {
-      return response.json();
-    })
-    .then(data => {
-      this.setState({ recipes: data });
-    });
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        this.setState({ recipes: data });
+      });
   };
 
   handleEditRecipe = (e, _id) => {
@@ -56,7 +56,12 @@ class Recipes extends Component {
     // stop the click event from also triggering the click event listener on the parent div
     e.stopPropagation();
     console.log(`Deleting recipe ${_id}`);
-    fetch(`${API_URL}/recipe/${_id}`, { method: 'DELETE' })
+    fetch(`${API_URL}/recipe/${_id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `BEARER ${this.props.userToken}`
+        }
+      })
       .then(response => {
         return response.json();
       })
@@ -101,10 +106,13 @@ class Recipes extends Component {
     recipeData.append('ingredients', recipeFormIngredients);
     recipeData.append('imagePath', recipeFormImage);
     // POST
-    console.log(recipeData)
+    console.log(recipeData);
     fetch(`${API_URL}/recipe`, {
       method: 'POST',
-      body: recipeData,
+      headers: {
+        Authorization: `BEARER ${this.props.userToken}`
+        },
+      body: recipeData
       // headers: { 'Content-Type': 'multipart/form-data' }
     })
       .then(response => {
@@ -112,10 +120,11 @@ class Recipes extends Component {
       })
       .then(data => {
         console.log(data);
-        this.setState({ 
-          recipeAddModalLoading: false, 
+        this.setState({
+          recipeAddModalLoading: false,
           recipeAddModalIsVisible: false,
-          recipeFormImagePreview: null });
+          recipeFormImagePreview: null
+        });
         this.getRecipes();
       })
       .catch(err => {
@@ -124,9 +133,9 @@ class Recipes extends Component {
   };
 
   recipeFormImageChange = (e, data) => {
-    this.setState({ 
-      recipeFormImagePreview: URL.createObjectURL(e.target.files[0]), 
-      recipeFormImage: e.target.files[0] 
+    this.setState({
+      recipeFormImagePreview: URL.createObjectURL(e.target.files[0]),
+      recipeFormImage: e.target.files[0]
     });
   };
 
@@ -139,6 +148,7 @@ class Recipes extends Component {
       <Container>
         <Menu secondary>
           <Menu.Item>
+            {this.props.isAuthenticated ? (
             <Button
               basic
               color="red"
@@ -146,7 +156,17 @@ class Recipes extends Component {
               onClick={this.handleAddRecipeClick}
             >
               Add Recipe
+            </Button> 
+            ) : (
+            <Button
+              basic
+              disabled
+              color="red"
+              name="Login to edit recipes"
+            >
+              Login to edit recipes
             </Button>
+            )}
           </Menu.Item>
         </Menu>
         <List selection animated relaxed celled>
@@ -155,6 +175,7 @@ class Recipes extends Component {
             onClickDeleteRecipe={this.handleDeleteRecipe}
             onClickEditRecipe={this.handleEditRecipe}
             onClickViewRecipe={this.handleViewRecipe}
+            isAuthenticated={this.props.isAuthenticated}
           />
         </List>
         {this.state.recipeViewModalIsVisible ? (

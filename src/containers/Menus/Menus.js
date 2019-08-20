@@ -15,10 +15,7 @@ class Menus extends Component {
 
   getMenus = () => {
     fetch(`${API_URL}/menus`, {
-      method: 'GET',
-      headers: {
-        Authorization: `BEARER ${this.props.userToken}`
-      }
+      method: 'GET'
     })
     .then(response => {
       return response.json();
@@ -50,7 +47,12 @@ class Menus extends Component {
     // stop the click event from also triggering the click event listener on the parent div
     e.stopPropagation();
     console.log(`Deleting menu ${_id}`);
-    fetch(`${API_URL}/menu/${_id}`, { method: 'DELETE' })
+    fetch(`${API_URL}/menu/${_id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `BEARER ${this.props.userToken}`
+        }
+      })
       .then(response => {
         return response.json();
       })
@@ -72,6 +74,7 @@ class Menus extends Component {
       <Container>
         <Menu secondary>
           <Menu.Item>
+            { this.props.isAuthenticated ? (
             <Button
               basic
               color="red"
@@ -79,6 +82,16 @@ class Menus extends Component {
             >
               New Menu
             </Button>
+            ) : (
+              <Button
+              basic
+              disabled
+              color="red"
+              name="Login to edit menus"
+            >
+              Login to edit menus
+            </Button>
+            )}
           </Menu.Item>
         </Menu>
         <List selection animated relaxed celled>

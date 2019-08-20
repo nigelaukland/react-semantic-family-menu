@@ -14,10 +14,12 @@ const menuListItem = props => {
         <List.Header>{props.name}</List.Header>
         <List.Description>{props.startDate}</List.Description>
       </List.Content>
+      { props.isAuthenticated ? (
       <List.Content floated='right'>
         <Button basic onClick={props.onClickEditMenu}>Edit</Button>
         <Button basic color='red' onClick={props.onClickDeleteMenu}>Delete</Button>
       </List.Content>
+      ) : null }
     </List.Item>
   );
 };

@@ -27,19 +27,16 @@ class Layout extends Component {
     signupFormEmail: '',
     signupFormPassword: ''
   };
-  
+
   handleMenuItemClick = (e, { name }) =>
-  this.setState({ menuActiveItem: name });
-  
+    this.setState({ menuActiveItem: name });
+
   handleLoginModalSubmit = (e, data) => {
     console.log(data);
     this.setState({ loginModalLoading: true });
     e.preventDefault();
     // deconstruct the state properties related to the form
-    const {
-      loginFormEmail,
-      loginFormPassword
-    } = this.state;
+    const { loginFormEmail, loginFormPassword } = this.state;
 
     // build the request body
     let loginData = {};
@@ -48,12 +45,12 @@ class Layout extends Component {
     // POST
     fetch(`${API_URL}/login`, {
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json'
       },
       method: 'POST',
-      body: JSON.stringify(loginData),
-        })
+      body: JSON.stringify(loginData)
+    })
       .then(response => {
         return response.json();
       })
@@ -82,12 +79,12 @@ class Layout extends Component {
 
   handleLogoutClick = (e, { name }) =>
     // Need to show some confirmation popup here...
-    this.setState({ 
+    this.setState({
       isAuthenticated: false,
       userEmail: '',
       userId: '',
       userToken: null
-     });
+    });
 
   handleLoginModalSignup = () => {
     this.setState({ loginModalIsVisible: false, signupModalIsVisible: true });
@@ -102,10 +99,7 @@ class Layout extends Component {
   handleSignupModalSubmit = (e, data) => {
     this.setState({ signupModalLoading: true });
     // deconstruct the state properties related to the form
-    const {
-      signupFormEmail,
-      signupFormPassword
-    } = this.state;
+    const { signupFormEmail, signupFormPassword } = this.state;
 
     // build the request body
     let userData = {};
@@ -114,12 +108,12 @@ class Layout extends Component {
     // POST
     fetch(`${API_URL}/signup`, {
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json'
       },
       method: 'POST',
-      body: JSON.stringify(userData),
-        })
+      body: JSON.stringify(userData)
+    })
       .then(response => {
         return response.json();
       })
@@ -156,18 +150,26 @@ class Layout extends Component {
           menuItemClicked={this.handleMenuItemClick}
           loginClicked={this.handleLoginClick}
           logoutClicked={this.handleLogoutClick}
-          isAuthenticated={this.state.userToken !== null} 
+          isAuthenticated={this.state.userToken !== null}
           // isAuthenticated={this.state.userToken !== ''}
           userEmail={this.state.userEmail}
           // addRecipeClicked={this.handleAddRecipeClick}
         />
-        {this.state.menuActiveItem === 'Home' ? <MenuHome /> : null}
+        {this.state.menuActiveItem === 'Home' ? (
+          <MenuHome isAuthenticated={this.state.isAuthenticated} />
+        ) : null}
         {this.state.menuActiveItem === 'Menus' ? (
-          <Menus isAuthenticated={this.state.isAuthenticated} />
+          <Menus
+            isAuthenticated={this.state.isAuthenticated}
+            userToken={this.state.userToken}
+          />
         ) : // <Container>This is the planner and list of available menus</Container>
         null}
         {this.state.menuActiveItem === 'Recipes' ? (
-          <Recipes isAuthenticated={this.state.isAuthenticated} />
+          <Recipes
+            isAuthenticated={this.state.isAuthenticated}
+            userToken={this.state.userToken}
+          />
         ) : null}
         {this.state.menuActiveItem === 'Shopping List' ? (
           <Container>This is the shopping list</Container>

@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { Container, Divider, Dimmer, Loader, Button } from 'semantic-ui-react';
+
 import Menu from './../../components/Menu/Menu';
 import Aux from './../../hoc/Auxilliary';
+import RecipeViewModal from './../../components/RecipeViewModal/RecipeViewModal';
 
 const API_URL = 'http://localhost:50001';
 
@@ -9,7 +11,9 @@ class MenuHome extends Component {
   state = {
     currentMenu: {},
     menuLoading: true,
-    addDayLoading: false
+    addDayLoading: false,
+    recipeViewModalIsVisible: false,
+    recipeTarget: ''
   };
 
   componentWillMount() {
@@ -27,12 +31,18 @@ class MenuHome extends Component {
   };
 
   onClickAddDay = () => {
-    this.setState({ addDayLoading: true })
+    this.setState({ addDayLoading: true });
     const newMenu = { ...this.state.currentMenu };
     newMenu.meals.push(this.state.currentMenu.meals[0]);
     console.log(newMenu);
-    this.setState({ currentMenu: newMenu });  
+    this.setState({ currentMenu: newMenu });
     this.setState({ addDayLoading: false });
+  };
+
+  closeRecipeViewModal = () => {
+    this.setState({
+      recipeViewModalIsVisible: false
+    });
   };
 
   render() {
@@ -46,9 +56,38 @@ class MenuHome extends Component {
           <Aux>
             <Menu currentMenu={this.state.currentMenu} />
             <Divider horizontal>Add one more day</Divider>
-            <Button loading={this.state.addDayLoading} onClick={this.onClickAddDay}  size='large' color='red' basic fluid>Click here to add another day</Button>
+            {this.props.isAuthenticated ? (
+              <Button
+                loading={this.state.addDayLoading}
+                onClick={this.onClickAddDay}
+                size="large"
+                color="red"
+                basic
+                fluid
+              >
+                Click here to add another day
+              </Button>
+            ) : (
+              <Button
+                loading={this.state.addDayLoading}
+                onClick={this.onClickAddDay}
+                disabled
+                size="large"
+                color="red"
+                basic
+                fluid
+              >
+                Login to edit current menu
+              </Button>
+            )}
           </Aux>
         )}
+        {this.state.recipeViewModalIsVisible ? (
+          <RecipeViewModal
+            recipe={this.state.recipeTarget}
+            closeRecipeViewModal={this.closeRecipeViewModal}
+          />
+        ) : null}
       </Container>
     );
   }

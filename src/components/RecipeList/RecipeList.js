@@ -22,6 +22,7 @@ const recipeList = props => {
           onClickDeleteRecipe={(e) =>
             props.onClickDeleteRecipe(e, recipe._id)
           }
+          isAuthenticated={props.isAuthenticated}
         />
       ))}
     </Aux>

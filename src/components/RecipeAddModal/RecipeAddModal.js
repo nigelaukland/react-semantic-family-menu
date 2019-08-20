@@ -24,6 +24,7 @@ const recipeAddModal = props => {
             label="Recipe name"
             placeholder="Short and snappy"
             onChange={props.recipeFormDataChange}
+            autoFocus
           />
           <Form.Input
             name="recipeFormDescription"
