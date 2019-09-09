@@ -1,37 +1,24 @@
 import React from 'react';
 import { Menu, Button, Icon } from 'semantic-ui-react';
+import { NavLink } from 'react-router-dom';
 
 const menuBar = props => {
   return (
     <Menu color="red">
-      <Menu.Item
-        name="Home"
-        active={props.menuActiveItem === 'Home'}
-        onClick={props.menuItemClicked}
-      />
-      <Menu.Item
-        name="Menus"
-        active={props.menuActiveItem === 'Menus'}
-        onClick={props.menuItemClicked}
-      />
-      <Menu.Item
-        name="Recipes"
-        active={props.menuActiveItem === 'Recipes'}
-        onClick={props.menuItemClicked}
-      />
-      <Menu.Item
-        name="Shopping List"
-        active={props.menuActiveItem === 'Shopping List'}
-        onClick={props.menuItemClicked}
-      />
+      {/* Need the exact prop, to ensure that the exact path is used for active styling */}
+      {/* Need the as={} to ensure that the right router component is rendered: https://react.semantic-ui.com/augmentation */}
+      <Menu.Item name="Home" as={NavLink} exact to="/home" />
+      <Menu.Item name="Menus" as={NavLink} exact to="/menus" />
+      <Menu.Item name="Recipes" as={NavLink} exact to="/recipes" />
+      <Menu.Item name="Shopping List" as={NavLink} exact to="/shopping-list" />
       <Menu.Menu position="right">
         {!props.isAuthenticated ? (
           <Menu.Item>
             <Button
+              name="Login"
               icon
               labelPosition="left"
               color="red"
-              name="Login"
               onClick={props.loginClicked}
             >
               <Icon name="user" />
@@ -41,10 +28,10 @@ const menuBar = props => {
         ) : (
           <Menu.Item>
             <Button
+              name="Logout"
               icon
               labelPosition="left"
               color="red"
-              name="Logout"
               onClick={props.logoutClicked}
             >
               <Icon name="user" />

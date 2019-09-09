@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { Route, Switch } from 'react-router-dom';
+
 import Aux from '../../hoc/Auxilliary';
 import MenuBar from '../../components/MenuBar/MenuBar';
 import Recipes from './../Recipes/Recipes';
@@ -16,8 +18,6 @@ class Layout extends Component {
     userEmail: '',
     userId: '',
     userToken: null,
-    isAuthenticated: false,
-    menuActiveItem: 'Home',
     loginModalIsVisible: false,
     loginModalLoading: false,
     loginFormEmail: '',
@@ -27,9 +27,6 @@ class Layout extends Component {
     signupFormEmail: '',
     signupFormPassword: ''
   };
-
-  handleMenuItemClick = (e, { name }) =>
-    this.setState({ menuActiveItem: name });
 
   handleLoginModalSubmit = (e, data) => {
     console.log(data);
@@ -146,34 +143,24 @@ class Layout extends Component {
     return (
       <Aux>
         <MenuBar
-          menuActiveItem={this.state.menuActiveItem}
-          menuItemClicked={this.handleMenuItemClick}
           loginClicked={this.handleLoginClick}
           logoutClicked={this.handleLogoutClick}
           isAuthenticated={this.state.userToken !== null}
-          // isAuthenticated={this.state.userToken !== ''}
           userEmail={this.state.userEmail}
-          // addRecipeClicked={this.handleAddRecipeClick}
         />
-        {this.state.menuActiveItem === 'Home' ? (
-          <MenuHome isAuthenticated={this.state.isAuthenticated} />
-        ) : null}
-        {this.state.menuActiveItem === 'Menus' ? (
-          <Menus
-            isAuthenticated={this.state.isAuthenticated}
-            userToken={this.state.userToken}
+        <Switch>
+          <Route path="/home" exact component={MenuHome} />
+          <Route path="/menus" exact component={Menus} />
+          <Route path="/recipes" exact component={Recipes} />
+          <Route
+            path="/shopping-list"
+            exact
+            render={() => <Container>This is the shopping list</Container>}
           />
-        ) : // <Container>This is the planner and list of available menus</Container>
-        null}
-        {this.state.menuActiveItem === 'Recipes' ? (
-          <Recipes
-            isAuthenticated={this.state.isAuthenticated}
-            userToken={this.state.userToken}
-          />
-        ) : null}
-        {this.state.menuActiveItem === 'Shopping List' ? (
-          <Container>This is the shopping list</Container>
-        ) : null}
+          <Route render={() => <Container>404 : Page not found!</Container>} />
+        </Switch>
+        
+        {/* This conditionally shows the login Modal */}
         {this.state.loginModalIsVisible ? (
           <LoginModal
             closeLoginModal={this.closeLoginModal}
@@ -183,6 +170,8 @@ class Layout extends Component {
             onLoginModalSignup={this.handleLoginModalSignup}
           />
         ) : null}
+
+        {/* This conditionally shows the signup Modal */}
         {this.state.signupModalIsVisible ? (
           <SignupModal
             newUser={this.state.loginFormEmail}
