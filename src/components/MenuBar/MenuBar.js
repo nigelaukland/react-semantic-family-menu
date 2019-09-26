@@ -1,6 +1,13 @@
+// react and redux
 import React from 'react';
-import { Menu, Button, Icon } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
+import { connect } from 'react-redux'
+
+// action creators
+import * as actions from './../../store/actions';
+
+// semantic components
+import { Menu, Button, Icon } from 'semantic-ui-react';
 
 const menuBar = props => {
   return (
@@ -12,7 +19,7 @@ const menuBar = props => {
       <Menu.Item name="Recipes" as={NavLink} exact to="/recipes" />
       <Menu.Item name="Shopping List" as={NavLink} exact to="/shopping-list" />
       <Menu.Menu position="right">
-        {!props.isAuthenticated ? (
+        {!props.r_isAuthenticated ? (
           <Menu.Item>
             <Button
               name="Login"
@@ -32,10 +39,10 @@ const menuBar = props => {
               icon
               labelPosition="left"
               color="red"
-              onClick={props.logoutClicked}
+              onClick={props.r_logoutClicked}
             >
               <Icon name="user" />
-              Logout {props.userEmail}
+              Logout {props.r_userEmail}
             </Button>
           </Menu.Item>
         )}
@@ -44,4 +51,16 @@ const menuBar = props => {
   );
 };
 
-export default menuBar;
+const mapStateToProps = (state) => {
+  return {
+    r_isAuthenticated: state.auth.isAuthenticated,
+    r_userEmail: state.auth.userEmail
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    r_logoutClicked: () => dispatch(actions.userLogout())
+  }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(menuBar);

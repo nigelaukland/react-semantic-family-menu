@@ -1,6 +1,12 @@
+// react and redux
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
+import { connect } from 'react-redux';
 
+// action creators
+import * as actions from './../../store/actions';
+
+// components
 import Aux from '../../hoc/Auxilliary';
 import MenuBar from '../../components/MenuBar/MenuBar';
 import Recipes from './../Recipes/Recipes';
@@ -9,15 +15,14 @@ import Menus from './../Menus/Menus';
 import LoginModal from './../../components/Auth/LoginModal';
 import SignupModal from './../../components/Auth/SignupModal';
 
+// semantic components
 import { Container } from 'semantic-ui-react';
 
 const API_URL = 'http://localhost:50001';
 
 class Layout extends Component {
+  // local UI state
   state = {
-    userEmail: '',
-    userId: '',
-    userToken: null,
     loginModalIsVisible: false,
     loginModalLoading: false,
     loginFormEmail: '',
@@ -27,6 +32,37 @@ class Layout extends Component {
     signupFormEmail: '',
     signupFormPassword: ''
   };
+
+  // functions to manage local UI state
+
+  loginFormDataChange = (e, { name, value }) => {
+    this.setState({ [name]: value });
+  };
+
+  handleLoginClick = (e, { name }) =>
+    this.setState({ loginModalIsVisible: true });
+
+  handleLoginModalSignup = () => {
+    this.setState({ loginModalIsVisible: false, signupModalIsVisible: true });
+  };
+
+  closeLoginModal = () => {
+    this.setState({
+      loginModalIsVisible: false
+    });
+  };
+
+  signupFormDataChange = (e, { name, value }) => {
+    this.setState({ [name]: value });
+  };
+
+  closeSignupModal = () => {
+    this.setState({
+      signupModalIsVisible: false
+    });
+  };
+
+  // manage central state
 
   handleLoginModalSubmit = (e, data) => {
     console.log(data);
@@ -53,44 +89,25 @@ class Layout extends Component {
       })
       .then(data => {
         console.log(data);
+
+        // call the login action
+        if (data.token !== null) {
+          this.props.r_login(
+            loginData.email,
+            data.userId,
+            data.token ? data.token : null
+          );
+        }
+
+        // set local UI state
         this.setState({
-          userEmail: loginData.email,
-          userId: data.userId,
-          userToken: data.token ? data.token : null,
           loginModalLoading: false,
-          loginModalIsVisible: false,
-          isAuthenticated: data.token !== null
+          loginModalIsVisible: false
         });
       })
       .catch(err => {
         console.log(err);
       });
-  };
-
-  loginFormDataChange = (e, { name, value }) => {
-    this.setState({ [name]: value });
-  };
-
-  handleLoginClick = (e, { name }) =>
-    this.setState({ loginModalIsVisible: true });
-
-  handleLogoutClick = (e, { name }) =>
-    // Need to show some confirmation popup here...
-    this.setState({
-      isAuthenticated: false,
-      userEmail: '',
-      userId: '',
-      userToken: null
-    });
-
-  handleLoginModalSignup = () => {
-    this.setState({ loginModalIsVisible: false, signupModalIsVisible: true });
-  };
-
-  closeLoginModal = () => {
-    this.setState({
-      loginModalIsVisible: false
-    });
   };
 
   handleSignupModalSubmit = (e, data) => {
@@ -115,13 +132,15 @@ class Layout extends Component {
         return response.json();
       })
       .then(data => {
+        // set logged in status
+        this.props.r_login(
+          userData.email,
+          data.userId,
+          data.token ? data.token : null
+        );
         this.setState({
-          userEmail: userData.email,
-          userId: data.userId,
-          userToken: data.token ? data.token : null,
           signupModalLoading: false,
-          signupModalIsVisible: false,
-          isAuthenticated: true
+          signupModalIsVisible: false
         });
       })
       .catch(err => {
@@ -129,25 +148,10 @@ class Layout extends Component {
       });
   };
 
-  signupFormDataChange = (e, { name, value }) => {
-    this.setState({ [name]: value });
-  };
-
-  closeSignupModal = () => {
-    this.setState({
-      signupModalIsVisible: false
-    });
-  };
-
   render() {
     return (
       <Aux>
-        <MenuBar
-          loginClicked={this.handleLoginClick}
-          logoutClicked={this.handleLogoutClick}
-          isAuthenticated={this.state.userToken !== null}
-          userEmail={this.state.userEmail}
-        />
+        <MenuBar loginClicked={this.handleLoginClick} />
         <Switch>
           <Route path="/home" exact component={MenuHome} />
           <Route path="/menus" exact component={Menus} />
@@ -159,7 +163,7 @@ class Layout extends Component {
           />
           <Route render={() => <Container>404 : Page not found!</Container>} />
         </Switch>
-        
+
         {/* This conditionally shows the login Modal */}
         {this.state.loginModalIsVisible ? (
           <LoginModal
@@ -186,4 +190,22 @@ class Layout extends Component {
   }
 }
 
-export default Layout;
+const mapStateToProps = state => {
+  return {
+    r_isAuthenticated: state.auth.isAuthenticated,
+    r_userEmail: state.auth.userEmail,
+    r_userId: state.auth.userId,
+    r_userToken: state.auth.userToken
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    r_login: (userEmail, userId, userToken) => dispatch(actions.userLogin(userEmail, userId, userToken))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Layout);

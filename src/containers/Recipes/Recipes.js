@@ -1,14 +1,21 @@
+// react and redux
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import * as actions from './../../store/actions';
+
+// components
 import RecipeList from './../../components/RecipeList/RecipeList';
 import RecipeViewModal from '../../components/RecipeViewModal/RecipeViewModal';
 import RecipeAddModal from './../../components/RecipeAddModal/RecipeAddModal';
+
+// semantic components
 import { Container, List, Menu, Button } from 'semantic-ui-react';
 
 const API_URL = 'http://localhost:50001';
 
 class Recipes extends Component {
+  // local UI state
   state = {
-    recipes: [],
     recipeTarget: null,
     recipeViewModalIsVisible: false,
     recipeAddModalIsVisible: false,
@@ -21,18 +28,8 @@ class Recipes extends Component {
   };
 
   componentDidMount() {
-    this.getRecipes();
+    this.props.r_initRecipes();
   }
-
-  getRecipes = () => {
-    fetch(`${API_URL}/recipes`)
-      .then(response => {
-        return response.json();
-      })
-      .then(data => {
-        this.setState({ recipes: data });
-      });
-  };
 
   handleEditRecipe = (e, _id) => {
     // stop the click event from also triggering the click event listener on the parent div
@@ -43,7 +40,7 @@ class Recipes extends Component {
   handleViewRecipe = (e, _id) => {
     console.log(`Viewing recipe ${_id}`);
     // grab the first (and hopefully only!) recipe from the array of recipes
-    const recipeToView = this.state.recipes.find(recipe => {
+    const recipeToView = this.props.recipes.find(recipe => {
       return recipe._id === _id;
     });
 
@@ -56,23 +53,7 @@ class Recipes extends Component {
     // stop the click event from also triggering the click event listener on the parent div
     e.stopPropagation();
     console.log(`Deleting recipe ${_id}`);
-    fetch(`${API_URL}/recipe/${_id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `BEARER ${this.props.userToken}`
-        }
-      })
-      .then(response => {
-        return response.json();
-      })
-      .then(data => {
-        // remove the recipe from the state, using the spread operator to copy the original recipes and then
-        // filter to compare and subsequently filter the elements
-        const nextRecipes = [...this.state.recipes].filter(recipe => {
-          return recipe._id !== data.recipe._id;
-        });
-        this.setState({ recipes: nextRecipes });
-      });
+    this.props.r_initDeleteRecipe(this.props.r_userToken, _id);
   };
 
   handleAddRecipeClick = (e, { name }) =>
@@ -111,7 +92,7 @@ class Recipes extends Component {
       method: 'POST',
       headers: {
         Authorization: `BEARER ${this.props.userToken}`
-        },
+      },
       body: recipeData
       // headers: { 'Content-Type': 'multipart/form-data' }
     })
@@ -149,33 +130,28 @@ class Recipes extends Component {
         <Menu secondary>
           <Menu.Item>
             {this.props.isAuthenticated ? (
-            <Button
-              basic
-              color="red"
-              name="Add Recipe"
-              onClick={this.handleAddRecipeClick}
-            >
-              Add Recipe
-            </Button> 
+              <Button
+                basic
+                color="red"
+                name="Add Recipe"
+                onClick={this.handleAddRecipeClick}
+              >
+                Add Recipe
+              </Button>
             ) : (
-            <Button
-              basic
-              disabled
-              color="red"
-              name="Login to edit recipes"
-            >
-              Login to edit recipes
-            </Button>
+              <Button basic disabled color="red" name="Login to edit recipes">
+                Login to edit recipes
+              </Button>
             )}
           </Menu.Item>
         </Menu>
         <List selection animated relaxed celled>
           <RecipeList
-            recipes={this.state.recipes}
+            recipes={this.props.r_recipes}
             onClickDeleteRecipe={this.handleDeleteRecipe}
             onClickEditRecipe={this.handleEditRecipe}
             onClickViewRecipe={this.handleViewRecipe}
-            isAuthenticated={this.props.isAuthenticated}
+            isAuthenticated={this.props.r_isAuthenticated}
           />
         </List>
         {this.state.recipeViewModalIsVisible ? (
@@ -201,4 +177,23 @@ class Recipes extends Component {
   }
 }
 
-export default Recipes;
+const mapStateToProps = state => {
+  return {
+    r_recipes: state.recipes.recipes,
+    r_userToken: state.auth.userToken,
+    r_isAuthenticated: state.auth.isAuthenticated
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    r_initRecipes: () => dispatch(actions.initRecipes()),
+    r_initDeleteRecipe: (userToken, _id) =>
+      dispatch(actions.initDeleteRecipe(userToken, _id))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Recipes);
