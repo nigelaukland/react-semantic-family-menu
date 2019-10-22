@@ -25,18 +25,6 @@ class Recipes extends Component {
     recipeFormImagePreview: null
   };
 
-  componentDidMount() {
-    this.props.r_initRecipes();
-  }
-
-  // componentDidUpdate() {
-  //   const recipeDataToView = this.props.r_recipes.find((recipe) => {
-  //     return recipe._id === this.props.r_recipeIdToView;
-  //   });
-
-  //   this.setState({ recipeTarget: recipeDataToView });
-  // }
-
   handleEditRecipe = (e, _id) => {
     // stop the click event from also triggering the click event listener on the parent div
     e.stopPropagation();
@@ -181,7 +169,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    r_initRecipes: () => dispatch(actions.initRecipes()),
     r_initDeleteRecipe: (userToken, _id) =>
       dispatch(actions.initDeleteRecipe(userToken, _id)),
     r_initAddRecipe: (userToken, recipeData) =>

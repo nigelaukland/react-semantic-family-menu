@@ -32,9 +32,8 @@ class DayMenu extends Component {
               {this.props.dayMenu.dinnerRecipeId ? (
                 <RecipeCard
                   recipe={this.props.dayMenu.dinnerRecipeId}
-                  onClickRecipeCard={(e) => {
-                    // this.props.r_openRecipeViewModal(e, this.props.dayMenu.dinnerRecipeId);
-                    this.props.r_openRecipeViewModal(this.props.dayMenu.dinnerRecipeId);
+                  onClickRecipeCard={() => {
+                    this.props.r_openRecipeViewModal(this.props.dayMenu.dinnerRecipeId._id)
                   }}
                 />
               ) : null}
@@ -46,12 +45,6 @@ class DayMenu extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    // r_recipeViewModalIsVisible: state.recipes.recipeViewModalIsVisible
-  };
-};
-
 const mapDispatchToProps = (dispatch) => {
   return {
     r_openRecipeViewModal: (recipeToView) =>
@@ -60,6 +53,6 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps
 )(DayMenu);

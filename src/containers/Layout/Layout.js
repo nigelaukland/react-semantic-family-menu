@@ -23,6 +23,7 @@ import { Container, Sidebar } from 'semantic-ui-react';
 const API_URL = 'http://localhost:50001';
 
 class Layout extends Component {
+  
   // local UI state
   state = {
     loginModalIsVisible: false,
@@ -34,6 +35,42 @@ class Layout extends Component {
     signupFormEmail: '',
     signupFormPassword: '',
     recipePickSidebarIsVisible: false
+  };
+
+  // utility functions
+  getRecipeData = (recipeId) => {
+    const recipeData = this.props.r_recipes.find((recipe) => {
+      return recipe._id === recipeId;
+    });
+    return recipeData;
+  };
+
+  // lifecycle hooks
+
+  componentDidMount() {
+    this.props.r_initRecipes();
+  }
+
+  componentWillMount = () => {
+    // check for persisted login details
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      // logout
+    } else {
+      const expirationDate = new Date(localStorage.getItem('expirationDate'));
+      if (expirationDate <= new Date()) {
+        // logout
+      } else {
+        const token = localStorage.getItem('token');
+        // const expirationDate = localStorage.getItem('expirationDate');
+        const userId = localStorage.getItem('userId');
+        const email = localStorage.getItem('email');
+
+        // store the peristed values in state
+        this.props.r_login(email, userId, token);
+      }
+    }
   };
 
   // functions to manage local UI state
@@ -178,28 +215,6 @@ class Layout extends Component {
       });
   };
 
-  componentWillMount = () => {
-    // check for persisted login details
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-      // logout
-    } else {
-      const expirationDate = new Date(localStorage.getItem('expirationDate'));
-      if (expirationDate <= new Date()) {
-        // logout
-      } else {
-        const token = localStorage.getItem('token');
-        // const expirationDate = localStorage.getItem('expirationDate');
-        const userId = localStorage.getItem('userId');
-        const email = localStorage.getItem('email');
-
-        // store the peristed values in state
-        this.props.r_login(email, userId, token);
-      }
-    }
-  };
-
   render() {
     return (
       // <Sidebar.Pushable as={Segment}>
@@ -264,7 +279,8 @@ class Layout extends Component {
             {/* This conditionally shows the recipe Modal */}
             {this.props.r_recipeViewModalIsVisible ? (
               <RecipeViewModal
-                recipeData={this.props.r_recipes[1]}
+                // recipeData={this.props.r_recipes[1]}
+                recipeData={this.getRecipeData(this.props.r_recipeIdToView)}
                 closeRecipeViewModal={this.props.r_closeRecipeViewModal}
               />
             ) : null}
@@ -283,7 +299,8 @@ const mapStateToProps = (state) => {
     r_userId: state.auth.userId,
     r_userToken: state.auth.userToken,
     r_recipeViewModalIsVisible: state.recipes.recipeViewModalIsVisible,
-    r_recipes: state.recipes.recipes
+    r_recipes: state.recipes.recipes,
+    r_recipeIdToView: state.recipes.recipeIdToView
   };
 };
 
@@ -291,6 +308,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     r_login: (userEmail, userId, userToken) =>
       dispatch(actions.userLogin(userEmail, userId, userToken)),
+    r_initRecipes: () => dispatch(actions.initRecipes()),
     r_closeRecipeViewModal: () => dispatch(actions.closeRecipe())
   };
 };

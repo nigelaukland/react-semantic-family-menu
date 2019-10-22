@@ -13,6 +13,9 @@ import { Container, Divider, Dimmer, Loader, Button } from 'semantic-ui-react';
 const API_URL = 'http://localhost:50001';
 
 class MenuHome extends Component {
+  
+  // local UI sate
+  
   state = {
     currentMenu: {},
     menuLoading: true,
@@ -20,6 +23,8 @@ class MenuHome extends Component {
     recipeViewModalIsVisible: false,
     recipeTarget: ''
   };
+
+  // lifecycle hooks
 
   componentWillMount() {
     this.getCurrentMenu();

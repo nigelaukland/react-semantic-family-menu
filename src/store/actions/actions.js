@@ -105,18 +105,18 @@ export const initAddRecipe = (userToken, recipeData) => {
   };
 };
 
-// export const initOpenRecipe = (recipeId) => {
-//   return (dispatch, getState) => {
-//     console.log(`Viewing recipe ${recipeId}`);
-//     // get the recipes form the redux state
-//     const { recipes } = getState();
-//     // grab the first (and hopefully only!) recipe from the array of recipes
-//     const recipeToView = recipes.find((recipe) => {
-//       return recipe._id === recipeId;
-//     });
+export const initOpenRecipe = (recipeId) => {
+  return (dispatch, getState) => {
+    console.log(`Viewing recipe ${recipeId}`);
+    // get the recipes form the redux state
+    const { recipes } = getState();
+    // grab the first (and hopefully only!) recipe from the array of recipes
+    const recipeToView = recipes.find((recipe) => {
+      return recipe._id === recipeId;
+    });
 
-//     // update the state to display the recipe in the modal
-//     this.props.r_openRecipeViewModal(recipeToView);
+    // update the state to display the recipe in the modal
+    this.props.r_openRecipeViewModal(recipeToView);
 
-//   };
-// };
+  };
+};
