@@ -1,9 +1,14 @@
+// react and redux
 import React, { Component } from 'react';
-import { Container, Divider, Dimmer, Loader, Button } from 'semantic-ui-react';
+import { connect } from 'react-redux';
 
+// components
 import Menu from './../../components/Menu/Menu';
 import Aux from './../../hoc/Auxilliary';
 import RecipeViewModal from './../../components/RecipeViewModal/RecipeViewModal';
+
+// semantic components
+import { Container, Divider, Dimmer, Loader, Button } from 'semantic-ui-react';
 
 const API_URL = 'http://localhost:50001';
 
@@ -93,4 +98,4 @@ class MenuHome extends Component {
   }
 }
 
-export default MenuHome;
+export default connect()(MenuHome);

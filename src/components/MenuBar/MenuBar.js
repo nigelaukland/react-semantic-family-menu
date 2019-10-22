@@ -1,15 +1,15 @@
 // react and redux
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 
 // action creators
-import * as actions from './../../store/actions';
+import * as actions from '../../store/actions/actions';
 
 // semantic components
 import { Menu, Button, Icon } from 'semantic-ui-react';
 
-const menuBar = props => {
+const menuBar = (props) => {
   return (
     <Menu color="red">
       {/* Need the exact prop, to ensure that the exact path is used for active styling */}
@@ -18,6 +18,10 @@ const menuBar = props => {
       <Menu.Item name="Menus" as={NavLink} exact to="/menus" />
       <Menu.Item name="Recipes" as={NavLink} exact to="/recipes" />
       <Menu.Item name="Shopping List" as={NavLink} exact to="/shopping-list" />
+      <Menu.Item
+        name="Show/Hide Recipe Picker"
+        onClick={props.onToggleRecipePicker}
+      />
       <Menu.Menu position="right">
         {!props.r_isAuthenticated ? (
           <Menu.Item>
@@ -55,12 +59,15 @@ const mapStateToProps = (state) => {
   return {
     r_isAuthenticated: state.auth.isAuthenticated,
     r_userEmail: state.auth.userEmail
-  }
-}
+  };
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
     r_logoutClicked: () => dispatch(actions.userLogout())
-  }
-}
-export default connect(mapStateToProps, mapDispatchToProps)(menuBar);
+  };
+};
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(menuBar);

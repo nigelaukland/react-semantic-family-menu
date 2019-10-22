@@ -1,12 +1,18 @@
+// react and redux
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+// components
 import MenuList from './../../components/MenuList/MenuList';
+
+// semantic components
 import { Container, List, Menu, Button } from 'semantic-ui-react';
 
 const API_URL = 'http://localhost:50001';
 
 class Menus extends Component {
   state = {
-    menus: [],
+    menus: []
   };
 
   componentDidMount() {
@@ -17,12 +23,12 @@ class Menus extends Component {
     fetch(`${API_URL}/menus`, {
       method: 'GET'
     })
-    .then(response => {
-      return response.json();
-    })
-    .then(data => {
-      this.setState({ menus: data });
-    });
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        this.setState({ menus: data });
+      });
   };
 
   handleEditMenu = (e, _id) => {
@@ -50,9 +56,9 @@ class Menus extends Component {
     fetch(`${API_URL}/menu/${_id}`, {
       method: 'DELETE',
       headers: {
-        Authorization: `BEARER ${this.props.userToken}`
-        }
-      })
+        Authorization: `BEARER ${this.props.r_userToken}`
+      }
+    })
       .then(response => {
         return response.json();
       })
@@ -74,29 +80,20 @@ class Menus extends Component {
       <Container>
         <Menu secondary>
           <Menu.Item>
-            { this.props.isAuthenticated ? (
-            <Button
-              basic
-              color="red"
-              name="Add Menu"
-            >
-              New Menu
-            </Button>
+            {this.props.r_isAuthenticated ? (
+              <Button basic color="red" name="Add Menu">
+                New Menu
+              </Button>
             ) : (
-              <Button
-              basic
-              disabled
-              color="red"
-              name="Login to edit menus"
-            >
-              Login to edit menus
-            </Button>
+              <Button basic disabled color="red" name="Login to edit menus">
+                Login to edit menus
+              </Button>
             )}
           </Menu.Item>
         </Menu>
         <List selection animated relaxed celled>
           <MenuList
-            isAuthenticated={this.props.isAuthenticated}
+            isAuthenticated={this.props.r_isAuthenticated}
             menus={this.state.menus}
             onClickDeleteMenu={this.handleDeleteMenu}
             onClickEditMenu={this.handleEditMenu}
@@ -108,4 +105,11 @@ class Menus extends Component {
   }
 }
 
-export default Menus;
+const mapStateToProps = state => {
+  return {
+    r_isAuthenticated: state.auth.isAuthenticated,
+    r_userToken: state.auth.userToken
+  };
+};
+
+export default connect(mapStateToProps)(Menus);

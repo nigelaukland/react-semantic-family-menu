@@ -11,8 +11,8 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 // Setup the store
-import authReducer from './store/authReducer';
-import recipeReducer from './store/recipeReducer';
+import authReducer from './store/reducers/authReducer';
+import recipeReducer from './store/reducers/recipeReducer';
 
 const rootReducer = combineReducers({
   auth: authReducer,

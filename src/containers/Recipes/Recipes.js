@@ -1,23 +1,21 @@
 // react and redux
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import * as actions from './../../store/actions';
+import * as actions from '../../store/actions/actions';
 
 // components
 import RecipeList from './../../components/RecipeList/RecipeList';
-import RecipeViewModal from '../../components/RecipeViewModal/RecipeViewModal';
+// import RecipeViewModal from '../../components/RecipeViewModal/RecipeViewModal';
 import RecipeAddModal from './../../components/RecipeAddModal/RecipeAddModal';
 
 // semantic components
 import { Container, List, Menu, Button } from 'semantic-ui-react';
 
-const API_URL = 'http://localhost:50001';
-
 class Recipes extends Component {
   // local UI state
   state = {
     recipeTarget: null,
-    recipeViewModalIsVisible: false,
+    // recipeViewModalIsVisible: false,
     recipeAddModalIsVisible: false,
     recipeAddModalLoading: false,
     recipeFormName: '',
@@ -31,6 +29,14 @@ class Recipes extends Component {
     this.props.r_initRecipes();
   }
 
+  // componentDidUpdate() {
+  //   const recipeDataToView = this.props.r_recipes.find((recipe) => {
+  //     return recipe._id === this.props.r_recipeIdToView;
+  //   });
+
+  //   this.setState({ recipeTarget: recipeDataToView });
+  // }
+
   handleEditRecipe = (e, _id) => {
     // stop the click event from also triggering the click event listener on the parent div
     e.stopPropagation();
@@ -39,14 +45,14 @@ class Recipes extends Component {
 
   handleViewRecipe = (e, _id) => {
     console.log(`Viewing recipe ${_id}`);
-    // grab the first (and hopefully only!) recipe from the array of recipes
-    const recipeToView = this.props.recipes.find(recipe => {
-      return recipe._id === _id;
-    });
+    // // grab the first (and hopefully only!) recipe from the array of recipes
+    // const recipeIdToView = this.props.r_recipes.find((recipe) => {
+    //   return recipe._id === _id;
+    // });
 
     // update the state to display the recipe in the modal
-    this.setState({ recipeTarget: recipeToView });
-    this.setState({ recipeViewModalIsVisible: true });
+    this.props.r_openRecipeViewModal(_id);
+    // this.setState({ r_recipeViewModalIsVisible: true });
   };
 
   handleDeleteRecipe = (e, _id) => {
@@ -88,29 +94,15 @@ class Recipes extends Component {
     recipeData.append('imagePath', recipeFormImage);
     // POST
     console.log(recipeData);
-    fetch(`${API_URL}/recipe`, {
-      method: 'POST',
-      headers: {
-        Authorization: `BEARER ${this.props.userToken}`
-      },
-      body: recipeData
-      // headers: { 'Content-Type': 'multipart/form-data' }
-    })
-      .then(response => {
-        return response.json();
-      })
-      .then(data => {
-        console.log(data);
-        this.setState({
-          recipeAddModalLoading: false,
-          recipeAddModalIsVisible: false,
-          recipeFormImagePreview: null
-        });
-        this.getRecipes();
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    console.log(this.props.r_userToken);
+    // initAddRecipe here
+    this.props.r_initAddRecipe(this.props.r_userToken, recipeData);
+    this.setState({
+      recipeAddModalLoading: false,
+      recipeAddModalIsVisible: false,
+      recipeFormImagePreview: null
+    });
+    // TODO: should probably show a success / error message here
   };
 
   recipeFormImageChange = (e, data) => {
@@ -129,7 +121,7 @@ class Recipes extends Component {
       <Container>
         <Menu secondary>
           <Menu.Item>
-            {this.props.isAuthenticated ? (
+            {this.props.r_isAuthenticated ? (
               <Button
                 basic
                 color="red"
@@ -154,15 +146,15 @@ class Recipes extends Component {
             isAuthenticated={this.props.r_isAuthenticated}
           />
         </List>
-        {this.state.recipeViewModalIsVisible ? (
+        {/* {this.props.r_recipeViewModalIsVisible ? (
           <RecipeViewModal
             recipe={this.state.recipeTarget}
-            closeRecipeViewModal={this.closeRecipeViewModal}
+            closeRecipeViewModal={this.props.r_closeRecipeViewModal}
           />
-        ) : null}
+        ) : null} */}
         {this.state.recipeAddModalIsVisible ? (
           <RecipeAddModal
-            recipe={this.state.recipeTarget}
+            recipe={this.state.recipeTarget} // TODO
             closeRecipeAddModal={this.closeRecipeAddModal}
             onClickUploadImage={this.handleUploadImage}
             recipeFormDataChange={this.recipeFormDataChange}
@@ -177,19 +169,26 @@ class Recipes extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     r_recipes: state.recipes.recipes,
+    // r_recipeViewModalIsVisible: state.recipes.recipeViewModalIsVisible,
+    r_recipeIdToView: state.recipes.recipeIdToView,
     r_userToken: state.auth.userToken,
     r_isAuthenticated: state.auth.isAuthenticated
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     r_initRecipes: () => dispatch(actions.initRecipes()),
     r_initDeleteRecipe: (userToken, _id) =>
-      dispatch(actions.initDeleteRecipe(userToken, _id))
+      dispatch(actions.initDeleteRecipe(userToken, _id)),
+    r_initAddRecipe: (userToken, recipeData) =>
+      dispatch(actions.initAddRecipe(userToken, recipeData)),
+    r_openRecipeViewModal: (recipeIdToView) =>
+      dispatch(actions.openRecipe(recipeIdToView)),
+    // r_closeRecipeViewModal: () => dispatch(actions.closeRecipe())
   };
 };
 

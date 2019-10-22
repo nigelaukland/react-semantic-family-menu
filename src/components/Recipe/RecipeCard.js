@@ -8,7 +8,7 @@ const recipeCard = (props) => {
   return (
     <Card 
       link
-      // onClick={props.onClickRecipeCard}
+      onClick={props.onClickRecipeCard} 
       >
     <Card.Content>
       <Image

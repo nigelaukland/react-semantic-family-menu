@@ -9,6 +9,7 @@ const recipeList = props => {
       {props.recipes.map(recipe => (
         <RecipeListItem
           //  this is also where we should pass the methods
+          pickMode={props.pickMode}
           key={recipe._id}
           name={recipe.name}
           description={recipe.description}
